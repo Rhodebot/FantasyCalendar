@@ -12,30 +12,31 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JSpinner;
 
-import j2html.tags.ContainerTag;
-
 import static j2html.TagCreator.*;
 
-public class FantasyCalendar{
+public class FantasyCalendar extends JFrame{
+	private JButton genButton;
+	private JSpinner startDaySpinner;
+	private MonthView monthView;
 
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		JButton genButton = new JButton("Generate");
-		genButton.addActionListener(.new GenerateButtonHandler());
-		frame.setLayout(new BorderLayout());
+	public FantasyCalendar() {
+		genButton = new JButton("Generate");
+		startDaySpinner = new JSpinner();
+		genButton.addActionListener(new GenerateButtonHandler());
+		monthView = new MonthView();
+		setLayout(new BorderLayout());
 		
-		frame.add(new JSpinner(), BorderLayout.NORTH);
-		frame.add(new MonthView(), BorderLayout.CENTER);
-		frame.add(genButton, BorderLayout.SOUTH);
+		add(startDaySpinner, BorderLayout.NORTH);
+		add(monthView, BorderLayout.CENTER);
+		add(genButton, BorderLayout.SOUTH);
 		
-		frame.pack();
-		frame.setVisible(true);
-
+		pack();
+		setVisible(true);
 	}
 	
-	private static void generate() {
+	private void generate(int startDay) {
 		File f = new File("test.html");
-		Month m = new Month (31, 7, 5);
+		Month m = new Month (monthView.getMonthComponents().get(0).getMonthName(),31, 7, startDay);
 		System.out.print(m);
 		
 		try {
@@ -51,7 +52,7 @@ public class FantasyCalendar{
 	
 	private class GenerateButtonHandler implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
-			generate();
+			generate((int) startDaySpinner.getValue());
 		}
 	}
 

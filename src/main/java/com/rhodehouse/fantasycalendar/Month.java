@@ -2,21 +2,34 @@ package com.rhodehouse.fantasycalendar;
 
 import java.util.ArrayList;
 
+import javax.swing.text.html.HTML.Attribute;
+
 import static j2html.TagCreator.*;
 import j2html.tags.ContainerTag;
 
 public class Month {
+	String name;
 	int numDays;
 	int weekLength;
 	int startDay;
 	String[][] events;
 	
-	public Month(int numDays, int weekLength, int startDay) {
+	public Month(String name, int numDays, int weekLength, int startDay) {
+		this.name = name;
 		this.numDays = numDays;
 		this.weekLength = weekLength;
 		this.startDay = startDay;
 		
 		events = new String[(int) Math.ceil((numDays+startDay)/(double) weekLength)][weekLength];
+	}
+	
+	private ContainerTag generateTableHead() {
+		ContainerTag firstRow, secondRow;
+		
+		firstRow = tr(th(name).attr("colspan", weekLength));
+		//secondRow = tr()
+		
+		return thead(firstRow);
 	}
 	
 	private ContainerTag generateTableBody() {
@@ -34,30 +47,16 @@ public class Month {
 					row.add(td());
 					endDays++;
 				} else {
-					row.add(td(p(Integer.toString((weekLength*i)+j - startDay))));
+					row.add(td(p(Integer.toString((weekLength*i)+j - startDay)), p(events[i][j-1] == null ? " " : events[i][j-1])));
 				}
 			}
 			rows.add(tr(each(row, r -> r)));
 		}
-		
 		return tbody(each(rows, r -> r));
-		
-		/*ArrayList<ContainerTag> rows = new ArrayList<ContainerTag>(events.length);
-		for (int i=0; i < events.length; i++) {
-			ArrayList<ContainerTag> week = new ArrayList<ContainerTag>(weekLength);
-			for (int j=0; j < weekLength; j++) {
-				week.add(td(p(Integer.toString((i*weekLength)+(j+1))), p(events[i][j] == null ? " " : events[i][j])));
-			}
-			rows.add(tr(each(week, w -> td(p(w)))));
-		}
-		ContainerTag t = table(each(rows, r -> r));
-		
-		return t;
-		*/
 	}
 	
 	public ContainerTag toHTML() {
-		ContainerTag result = table(generateTableBody());
+		ContainerTag result = table(generateTableHead(), generateTableBody());
 		return result;
 	}
 	
@@ -81,6 +80,6 @@ public class Month {
 			string += "]\n";
 		}
 		
-		return string;
+		return name+"\n"+string;
 	}
 }
