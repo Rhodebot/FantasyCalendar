@@ -11,32 +11,34 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 
 import static j2html.TagCreator.*;
 
 public class FantasyCalendar extends JFrame{
 	private JButton genButton;
 	private JSpinner startDaySpinner;
-	private MonthView monthView;
+	private ComponentPanel monthView, weekView;
 
 	public FantasyCalendar() {
 		genButton = new JButton("Generate");
 		startDaySpinner = new JSpinner();
 		genButton.addActionListener(new GenerateButtonHandler());
-		monthView = new MonthView();
+		monthView = new ComponentPanel(new MonthComponent(1), new MonthAddHandler());
+		weekView = new ComponentPanel(new WeekdayComponent(1), new WeekdayAddHandler());
+		
 		setLayout(new BorderLayout());
 		
 		add(startDaySpinner, BorderLayout.NORTH);
-		add(monthView, BorderLayout.CENTER);
+		add(weekView, BorderLayout.CENTER);
 		add(genButton, BorderLayout.SOUTH);
 		
 		pack();
-		setVisible(true);
 	}
 	
 	private void generate(int startDay) {
 		File f = new File("test.html");
-		Month m = new Month (monthView.getMonthComponents().get(0).getMonthName(),31, 7, startDay);
+		Month m = new Month (((MonthComponent) monthView.getCalComponents().get(0)).getMonthName(),31, 7, startDay);
 		System.out.print(m);
 		
 		try {
@@ -47,6 +49,18 @@ public class FantasyCalendar extends JFrame{
 			writ.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private class MonthAddHandler implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			monthView.addComp(new MonthComponent(monthView.getCalComponents().size()+1));
+		}
+	}
+	
+	private class WeekdayAddHandler implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			weekView.addComp(new WeekdayComponent(weekView.getCalComponents().size()+1));
 		}
 	}
 	
