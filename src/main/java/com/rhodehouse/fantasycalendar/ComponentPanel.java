@@ -25,7 +25,7 @@ public class ComponentPanel extends JPanel {
 	
 	ArrayList<JComponent> components = new ArrayList<JComponent>();
 	
-	public ComponentPanel(JComponent firstComponent, ActionListener addHandler) {
+	public ComponentPanel(String name, JComponent firstComponent, ActionListener addHandler) {
 		super(new BorderLayout());
 		
 		addButton = new JButton("Add");
@@ -46,7 +46,7 @@ public class ComponentPanel extends JPanel {
 		
 		scrollContainer.setPreferredSize(new Dimension(280,200));
 		
-		this.setBorder(BorderFactory.createTitledBorder("Months"));
+		this.setBorder(BorderFactory.createTitledBorder(name));
 		
 		add(scrollContainer, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);
@@ -62,6 +62,9 @@ public class ComponentPanel extends JPanel {
 	
 	public ArrayList<JComponent> getCalComponents() {
 		return components;
+	}
+	public int getNumComponents() {
+		return components.size();
 	}
 	
 	private class RemoveButtonHandler implements ActionListener {

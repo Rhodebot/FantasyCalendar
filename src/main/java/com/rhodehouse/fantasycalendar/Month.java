@@ -10,26 +10,26 @@ import j2html.tags.ContainerTag;
 public class Month {
 	String name;
 	int numDays;
-	int weekLength;
+	ArrayList<String> weekDays;
 	int startDay;
 	String[][] events;
 	
-	public Month(String name, int numDays, int weekLength, int startDay) {
+	public Month(String name, int numDays, ArrayList<String> weekDays, int startDay) {
 		this.name = name;
 		this.numDays = numDays;
-		this.weekLength = weekLength;
+		this.weekDays = weekDays;
 		this.startDay = startDay;
 		
-		events = new String[(int) Math.ceil((numDays+startDay)/(double) weekLength)][weekLength];
+		events = new String[(int) Math.ceil((numDays+startDay)/(double) weekDays.size())][weekDays.size()];
 	}
 	
 	private ContainerTag generateTableHead() {
 		ContainerTag firstRow, secondRow;
 		
-		firstRow = tr(th(name).attr("colspan", weekLength));
-		//secondRow = tr()
+		firstRow = tr(th(name).attr("colspan", weekDays.size()));
+		secondRow = tr(each(weekDays, day -> td(day)));
 		
-		return thead(firstRow);
+		return thead(firstRow, secondRow);
 	}
 	
 	private ContainerTag generateTableBody() {
@@ -39,15 +39,15 @@ public class Month {
 		
 		for (int i=0; i < events.length; i++) {
 			ArrayList<ContainerTag> row = new ArrayList<ContainerTag>();
-			for (int j=1; j <= weekLength; j++) {
+			for (int j=1; j <= weekDays.size(); j++) {
 				if (empties > 0 ) {
 					row.add(td());
 					empties--;
-				} else if (((weekLength * i) + j) - startDay > numDays) {
+				} else if (((weekDays.size() * i) + j) - startDay > numDays) {
 					row.add(td());
 					endDays++;
 				} else {
-					row.add(td(p(Integer.toString((weekLength*i)+j - startDay)), p(events[i][j-1] == null ? " " : events[i][j-1])));
+					row.add(td(p(Integer.toString((weekDays.size()*i)+j - startDay)), p(events[i][j-1] == null ? " " : events[i][j-1])));
 				}
 			}
 			rows.add(tr(each(row, r -> r)));
@@ -61,25 +61,30 @@ public class Month {
 	}
 	
 	public String toString() {
-		String string = new String();
+		String string = name+"\n";
 		int empties = startDay;
 		int endDays = 0;
 		
+		for (int i=0; i < weekDays.size(); i++)
+			string += weekDays.get(i)+" ";
+		
+		string += "\n";
+		
 		for (int i=0; i < events.length; i++) {
 			string += "[ ";
-			for (int j=1; j <= weekLength; j++)
+			for (int j=1; j <= weekDays.size(); j++)
 				if (empties > 0) {
 					string += "  ";
 					empties--;
-				} else if (((weekLength * i)+j)-startDay > numDays) {
+				} else if (((weekDays.size() * i)+j)-startDay > numDays) {
 					string += "  ";
 					endDays++;
 				} else {
-					string += (((i*weekLength) + j)-startDay)+ " ";
+					string += (((i*weekDays.size()) + j)-startDay)+ " ";
 				}
 			string += "]\n";
 		}
 		
-		return name+"\n"+string;
+		return string;
 	}
 }
